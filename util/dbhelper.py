@@ -1,9 +1,11 @@
+from time import strftime
 
 import pymysql.cursors
 
 import model.trial
 
 # 连接配置信息
+from model import trial
 
 config = {
         'host': '127.0.0.1',
@@ -42,14 +44,18 @@ class DBHelper(Singleton):
                 sql = 'SELECT * FROM trial'
                 cursor.execute(sql)
             # 获取查询结果
-            result = cursor.fetchone()
-            print(result)
+            result = cursor.fetchall()
+
+            for resultItem in result:
+                resultItem['start_date'] = (resultItem['start_date']).strftime('%Y-%m-%d')
+
+            # print(result)
             # 没有设置默认自动提交，需要主动提交，以保存所执行的语句
             self.connection.commit()
-
         finally:
             pass
             # self.connection.close()
+        return result
 
     def selectTrial(self,trialId):
         result = None
@@ -96,6 +102,8 @@ class DBHelper(Singleton):
 
     def close(self):
         self.connection.close()
+
+
 
 
 
